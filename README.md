@@ -1,1 +1,2 @@
 # CartReminderMail
+This Magento 2 module sends a reminder email to users after they add items to their cart. If the cart remains abandoned for 12 hours, a follow-up email is sent, reminding the user that their cart is waiting. The email includes product details and a link to the cart. Additionally, if there are any updates to the cart, another reminder email is sent 12 hours later, with the updated product details and cart link.
