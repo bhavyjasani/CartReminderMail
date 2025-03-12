@@ -1,0 +1,1315 @@
+
+
+//     public function execute()
+//     {   
+//         $threeHoursAgo = $this->date->gmtDate('Y-m-d H:i:s', 
+//             $this->date->gmtTimestamp() - 300); // 300 seconds for testing, change to 3 * 3600 for 3 hours
+
+//             $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/testlog.log');
+            // $logger = new \Zend_Log();
+            // $logger->addWriter($writer);
+            // $logger->info('email send success'); // Print string type data
+            // $logger->info('time::' . print_r($threeHoursAgo, true));
+
+//         // Get active quotes that haven't had emails sent
+//         $collection = $this->quoteCollectionFactory->create()
+//             ->addFieldToFilter('email_sent', 0) // 0 means email not sent yet
+//             ->addFieldToFilter('updated_at', ['lteq' => $threeHoursAgo]);
+
+//             $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/testlog.log');
+            // $logger = new \Zend_Log();
+            // $logger->addWriter($writer);
+            // $logger->info('email send success'); // Print string type data
+            // $logger->info('Data::' . print_r($collection->getData(), true));
+
+//         // foreach ($collection as $quote) {
+            // $logger->info('quote::' . print_r($quote, true));
+//         //     $mail = $this->sendEmail($quote);
+//         //     if ($mail) {
+//         //         // Update email_sent flag to 1 after sending
+//         //         $quote->setEmailSent(1)->save();
+//         //     }
+//         // }
+
+
+//         foreach ($collection as $quote) {
+            // $logger->info('Processing quote ID: ' . $quote->getId());
+            
+//             if ($quote->getCustomerEmail()) {
+                // $logger->info('Attempting to send email to: ' . $quote->getCustomerEmail());
+//                 $mail = $this->sendEmail($quote);
+                
+//                 if ($mail) {
+                    // $logger->info('Email sent successfully for quote ID: ' . $quote->getId());
+//                     $quote->setEmailSent(1)->save();
+//                 } else {
+                    // $logger->info('Failed to send email for quote ID: ' . $quote->getId());
+//                 }
+//             } else {
+                // $logger->info('No customer email found for quote ID: ' . $quote->getId());
+//             }
+//         }
+//     }
+
+//     protected function sendEmail($quote)
+//     {
+//         try {
+            // $logger->info('call send mail function');
+
+//             $storeId = $quote->getStoreId();
+
+            // $logger->info('storeId::' . print_r($storeId, true));
+            
+//             $templateVars = [
+//                 'customer_name' => $quote->getCustomerFirstname() ?: 'Valued Customer',
+//                 'cart_items' => $this->getCartItemsHtml($quote)
+//             ];
+
+//             $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/testlog.log');
+            // $logger = new \Zend_Log();
+            // $logger->addWriter($writer);
+            // $logger->info('email send success'); // Print string type data
+            // $logger->info('template::' . print_r($templateVars, true));
+
+//             $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/testlog.log');
+            // $logger = new \Zend_Log();
+            // $logger->addWriter($writer);
+            $logger->info('email send success'); // Print string type data
+            // $logger->info('sender::' . print_r($this->scopeConfig->getValue('smtp/configuration_option/username', ScopeInterface::SCOPE_STORE), true));
+
+//             $transport = $this->transportBuilder
+//                 ->setTemplateIdentifier('cart_reminder_email_template')
+//                 ->setTemplateOptions(['area' => 'frontend', 'store' => $storeId])
+//                 ->setTemplateVars($templateVars)
+//                 ->setFrom([
+//                     'email' => $this->scopeConfig->getValue('smtp/configuration_option/username', ScopeInterface::SCOPE_STORE),
+//                     'name' => 'Sales Department'
+//                 ])
+//                 ->addTo($quote->getCustomerEmail())
+//                 ->getTransport();
+
+//             $transport->sendMessage();
+
+//             $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/testlog.log');
+            // $logger = new \Zend_Log();
+            // $logger->addWriter($writer);
+            // $logger->info('email send success'); // Print string type data
+            $logger->info('Data::' . print_r($CategoryPrice, true));
+
+
+//             return true;
+//         } catch (\Exception $e) {
+//             return false;
+//         }
+//     }
+
+//     protected function getCartItemsHtml($quote)
+//     {
+//         $html = '';
+//         foreach ($quote->getAllVisibleItems() as $item) {
+//             $html .= sprintf(
+//                 "Product: %s<br>Qty: %s<br>Price: %s<br><br>",
+//                 $item->getName(),
+//                 $item->getQty(),
+//                 $quote->getStore()->formatPrice($item->getPrice(), false)
+//             );
+//         }
+//         return $html;
+//     }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<?php
+
+namespace Dolphin\CartReminder\Cron;
+
+use Magento\Framework\Stdlib\DateTime\DateTime;
+use Magento\Framework\Mail\Template\TransportBuilder;
+use Magento\Store\Model\StoreManagerInterface;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Quote\Model\ResourceModel\Quote\CollectionFactory;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+
+class SendReminders
+{
+    protected $quoteCollectionFactory;
+    protected $date;
+    protected $transportBuilder;
+    protected $storeManager;
+    protected $scopeConfig;
+
+    public function __construct(
+        CollectionFactory $quoteCollectionFactory,
+        DateTime $date,
+        TransportBuilder $transportBuilder,
+        StoreManagerInterface $storeManager,
+        ScopeConfigInterface $scopeConfig,
+    ) {
+        $this->quoteCollectionFactory = $quoteCollectionFactory;
+        $this->date = $date;
+        $this->scopeConfig = $scopeConfig;
+        $this->transportBuilder = $transportBuilder;
+        $this->storeManager = $storeManager;
+    }
+
+    public function execute()
+    {   
+        
+        // $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/testlog.log');
+        // $logger = new \Zend_Log();
+        // $logger->addWriter($writer);
+
+        $fiveMinutesAgo = $this->date->gmtDate('Y-m-d H:i:s', 
+            $this->date->gmtTimestamp() - (5 * 60)); 
+        
+        // $logger->info('Checking for abandoned carts updated before: ' . $fiveMinutesAgo);
+
+        $collection = $this->quoteCollectionFactory->create()
+            ->addFieldToFilter('email_sent', 0) // 0 means email not sent yet
+            ->addFieldToFilter('updated_at', ['lteq' => $fiveMinutesAgo]);
+
+        // $logger->info('Found ' . $collection->getSize() . ' abandoned carts to process');
+        // $logger->info('Collection data: ' . print_r($collection->getData(), true));
+
+        foreach ($collection as $quote) {
+            // $logger->info('Processing quote ID: ' . $quote->getId());
+            
+            if ($quote->getCustomerEmail()) {
+                // $logger->info('Attempting to send email to: ' . $quote->getCustomerEmail());
+                // $logger->info('Quote last updated at: ' . $quote->getUpdatedAt());
+                
+                $mail = $this->sendEmail($quote);
+                
+                if ($mail) {
+                    // $logger->info('Email sent successfully for quote ID: ' . $quote->getId());
+                    $quote->setEmailSent(1)->save();
+                } else {
+                    // $logger->error('Failed to send email for quote ID: ' . $quote->getId());
+                }
+            } else {
+                // $logger->info('No customer email found for quote ID: ' . $quote->getId());
+            }
+        }
+    }
+
+    protected function sendEmail($quote)
+{
+
+    $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/testlog.log');
+    $logger = new \Zend_Log();
+    $logger->addWriter($writer);
+    
+    try {
+        $logger->info('Starting email send process');
+        
+        $storeId = $quote->getStoreId();
+        // $logger->info('Store ID: ' . $storeId);
+        
+        $templateId = 'cart_reminder_email_template';
+        // $logger->info('Template ID: ' . $templateId);
+        
+        $templateVars = [
+            'customer_name' => $quote->getCustomerFirstname(),
+        ];
+        // $logger->info('Template variables prepared: ' . print_r($templateVars, true));
+        
+        
+        $senderEmail = $this->scopeConfig->getValue(
+            'smtp/configuration_option/username',
+            ScopeInterface::SCOPE_STORE
+        );
+        // $logger->info('Sender email: ' . $senderEmail);
+        
+        if (!$senderEmail) {
+            throw new \Exception('Sender email not configured in SMTP settings');
+        }
+        
+        $transport = $this->transportBuilder
+            ->setTemplateIdentifier($templateId)
+            ->setTemplateOptions([
+                'area' => 'frontend',
+                'store' => $storeId
+            ])
+            ->setTemplateVars($templateVars)
+            ->setFrom([
+                'email' => $senderEmail,
+                'name' => 'Sales Department'
+            ])
+            ->addTo($quote->getCustomerEmail())
+            ->getTransport();
+
+        // $logger->info('Transport object created successfully');
+        
+        $transport->sendMessage();
+        $logger->info('Email sent successfully');
+
+        return true;
+    } catch (\Exception $e) {
+        // $logger->error('Failed to send email: ' . $e->getMessage());
+        // $logger->error('Stack trace: ' . $e->getTraceAsString());
+        return false;
+    }
+}
+}
+
+
+
+
+
+
+
+
+
+
+
+***************************************************************************************************************************************************************************************
+
+
+<?php
+
+namespace Dolphin\CartReminder\Cron;
+
+use Magento\Framework\Stdlib\DateTime\DateTime;
+use Magento\Framework\Mail\Template\TransportBuilder;
+use Magento\Store\Model\StoreManagerInterface;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Quote\Model\ResourceModel\Quote\CollectionFactory;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+
+class SendReminders
+{
+    protected $quoteCollectionFactory;
+    protected $date;
+    protected $transportBuilder;
+    protected $storeManager;
+    protected $scopeConfig;
+
+    public function __construct(
+        CollectionFactory $quoteCollectionFactory,
+        DateTime $date,
+        TransportBuilder $transportBuilder,
+        StoreManagerInterface $storeManager,
+        ScopeConfigInterface $scopeConfig,
+    ) {
+        $this->quoteCollectionFactory = $quoteCollectionFactory;
+        $this->date = $date;
+        $this->scopeConfig = $scopeConfig;
+        $this->transportBuilder = $transportBuilder;
+        $this->storeManager = $storeManager;
+    }
+
+    public function execute()
+    {   
+        
+        $fiveMinutesAgo = $this->date->gmtDate('Y-m-d H:i:s', 
+            $this->date->gmtTimestamp() - (5 * 60)); 
+        
+
+        $collection = $this->quoteCollectionFactory->create()
+            ->addFieldToFilter('email_sent', 0) 
+            ->addFieldToFilter('updated_at', ['lteq' => $fiveMinutesAgo]);
+
+
+        foreach ($collection as $quote) {
+            
+            if ($quote->getCustomerEmail()) {
+                
+                $mail = $this->sendEmail($quote);
+                
+                if ($mail) {
+                    $quote->setEmailSent(1)->save();
+                }
+            }
+        }
+    }
+
+    protected function sendEmail($quote)
+{
+
+    $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/testlog.log');
+    $logger = new \Zend_Log();
+    $logger->addWriter($writer);
+    
+    try {
+        $logger->info('Starting email send process');
+        
+        $storeId = $quote->getStoreId();
+        $templateId = 'cart_reminder_email_template';
+        $templateVars = [
+            'customer_name' => $quote->getCustomerFirstname(),
+        ];
+        $senderEmail = $this->scopeConfig->getValue(
+            'smtp/configuration_option/username',
+            ScopeInterface::SCOPE_STORE
+        );
+        
+        $transport = $this->transportBuilder
+            ->setTemplateIdentifier($templateId)
+            ->setTemplateOptions([
+                'area' => 'frontend',
+                'store' => $storeId
+            ])
+            ->setTemplateVars($templateVars)
+            ->setFrom([
+                'email' => $senderEmail,
+                'name' => 'Sales Department'
+            ])
+            ->addTo($quote->getCustomerEmail())
+            ->getTransport();
+        
+        $transport->sendMessage();
+        $logger->info('Email sent successfully');
+
+        return true;
+    } catch (\Exception $e) {
+        $logger->error('Failed to send email: ' . $e->getMessage());
+        $logger->error('Stack trace: ' . $e->getTraceAsString());
+        return false;
+    }
+}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<?php
+
+namespace Dolphin\CartReminder\Cron;
+
+use Magento\Framework\Stdlib\DateTime\DateTime;
+use Magento\Framework\Mail\Template\TransportBuilder;
+use Magento\Store\Model\StoreManagerInterface;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Quote\Model\ResourceModel\Quote\CollectionFactory;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+
+class SendReminders
+{
+    protected $quoteCollectionFactory;
+    protected $date;
+    protected $transportBuilder;
+    protected $storeManager;
+    protected $scopeConfig;
+
+    public function __construct(
+        CollectionFactory $quoteCollectionFactory,
+        DateTime $date,
+        TransportBuilder $transportBuilder,
+        StoreManagerInterface $storeManager,
+        ScopeConfigInterface $scopeConfig
+    ) {
+        $this->quoteCollectionFactory = $quoteCollectionFactory;
+        $this->date = $date;
+        $this->scopeConfig = $scopeConfig;
+        $this->transportBuilder = $transportBuilder;
+        $this->storeManager = $storeManager;
+    }
+
+    public function execute()
+    {   
+        $fiveMinutesAgo = $this->date->gmtDate('Y-m-d H:i:s', 
+            $this->date->gmtTimestamp() - (2 * 60));
+
+        $collection = $this->quoteCollectionFactory->create()
+            ->addFieldToFilter('email_sent', 0)
+            // ->addFieldToFilter('is_active', 1)
+            // ->addFieldToFilter('customer_email', ['notnull' => true])
+            ->addFieldToFilter('updated_at', ['lteq' => $fiveMinutesAgo]);
+
+        foreach ($collection as $quote) {
+            if ($quote->getCustomerEmail()) {
+                $mail = $this->sendEmail($quote);
+                if ($mail) {
+                    $quote->setEmailSent(1)->save();
+                }
+            }
+        }
+    }
+
+
+
+
+
+protected function getCartItemsHtml($quote)
+{
+    $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+    $logger = $objectManager->create(\Psr\Log\LoggerInterface::class);
+    $priceHelper = $objectManager->create(\Magento\Framework\Pricing\Helper\Data::class);
+
+    try {
+        // Debug: Log quote details
+        $logger->info('Quote ID: ' . $quote->getId());
+        $logger->info('Quote is active: ' . ($quote->getIsActive() ? 'Yes' : 'No'));
+        $logger->info('Customer Email: ' . $quote->getCustomerEmail());
+
+        // Validate quote and items
+        if (!$quote || !$quote->getId()) {
+            $logger->error('Invalid quote object');
+            return 'No cart items found.';
+        }
+
+        $items = $quote->getAllVisibleItems();
+        
+        // Debug: Log items details
+        $logger->info('Number of cart items: ' . count($items));
+        
+        if (empty($items)) {
+            $logger->warning('No visible items in the cart');
+            return 'No items in the cart.';
+        }
+
+        $html = '<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">';
+        $html .= '<tr>
+                    <th style="padding: 10px; border: 1px solid #ddd; background: #f8f8f8;">Product</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; background: #f8f8f8;">Quantity</th>
+                    <th style="padding: 10px; border: 1px solid #ddd; background: #f8f8f8;">Price</th>
+                </tr>';
+
+        foreach ($items as $item) {
+            // Debug: Log individual item details
+            $logger->info('Item Name: ' . $item->getName());
+            $logger->info('Item Quantity: ' . $item->getQty());
+            $logger->info('Item Price: ' . $item->getPrice());
+
+            $html .= '<tr>';
+            // Product Name column
+            $html .= '<td style="padding: 10px; border: 1px solid #ddd;">' . $this->escapeHtml($item->getName()) . '</td>';
+
+            // Quantity column
+            $html .= '<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">' . (int)$item->getQty() . '</td>';
+
+            // Price column using Magento's price helper
+            $html .= '<td style="padding: 10px; border: 1px solid #ddd; text-align: right;">' 
+                    . $priceHelper->currency($item->getPrice(), true, false) . '</td>';
+
+            $html .= '</tr>';
+        }
+
+        // Add total using price helper
+        $html .= '<tr>
+                    <td colspan="2" style="padding: 10px; border: 1px solid #ddd; text-align: right;"><strong>Total:</strong></td>
+                    <td style="padding: 10px; border: 1px solid #ddd; text-align: right;"><strong>' 
+                    . $priceHelper->currency($quote->getGrandTotal(), true, false) . '</strong></td>
+                </tr>';
+
+        $html .= '</table>';
+
+        $logger->info('Cart items HTML generated successfully');
+
+        return $html;
+    } catch (\Exception $e) {
+        $logger->error('Error generating cart items HTML: ' . $e->getMessage());
+        $logger->error('Stack trace: ' . $e->getTraceAsString());
+        return 'Unable to generate cart items list. Error: ' . $e->getMessage();
+    }
+}
+
+
+protected function escapeHtml($string)
+{
+    return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
+}
+
+    protected function sendEmail($quote)
+    {
+        $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/cart_reminder.log');
+        $logger = new \Zend_Log();
+        $logger->addWriter($writer);
+        
+        try {
+            $logger->info('Starting email send process for quote ID: ' . $quote->getId());
+            
+            $storeId = $quote->getStoreId();
+            $store = $this->storeManager->getStore($storeId);
+            // $this->getCartItemsHtml($quote);
+
+            // $logger->info(print_r($htmlcode));
+
+            $templateVars = [
+                'customer_name' => $quote->getCustomerFirstname() ,
+                'cart_items' => $this->getCartItemsHtml($quote),
+                // 'store' => $store
+            ];
+            
+            $senderEmail = $this->scopeConfig->getValue(
+                'smtp/configuration_option/username',
+                ScopeInterface::SCOPE_STORE
+            );
+            
+            $transport = $this->transportBuilder
+                ->setTemplateIdentifier('cart_reminder_email_template')
+                ->setTemplateOptions([
+                    'area' => 'frontend',
+                    'store' => $storeId
+                ])
+                ->setTemplateVars($templateVars)
+                ->setFrom([
+                    'email' => $senderEmail,
+                    'name' => 'Sales Department'
+                ])
+                ->addTo($quote->getCustomerEmail())
+                ->getTransport();
+            
+            $transport->sendMessage();
+            $logger->info('Email sent successfully to: ' . $quote->getCustomerEmail());
+
+            return true;
+        } catch (\Exception $e) {
+            $logger->error('Failed to send email: ' . $e->getMessage());
+            $logger->error('Stack trace: ' . $e->getTraceAsString());
+            return false;
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// protected function getCartItemsHtml($quote)
+// {
+//     $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+//     $logger = $objectManager->create(\Psr\Log\LoggerInterface::class);
+
+//     try {
+//         // Debug: Log quote details
+//         $logger->info('Quote ID: ' . $quote->getId());
+//         $logger->info('Quote is active: ' . ($quote->getIsActive() ? 'Yes' : 'No'));
+//         $logger->info('Customer Email: ' . $quote->getCustomerEmail());
+
+//         // Validate quote and items
+//         if (!$quote || !$quote->getId()) {
+//             $logger->error('Invalid quote object');
+//             return 'No cart items found.';
+//         }
+
+//         $items = $quote->getAllVisibleItems();
+        
+//         // Debug: Log items details
+//         $logger->info('Number of cart items: ' . count($items));
+        
+//         if (empty($items)) {
+//             $logger->warning('No visible items in the cart');
+//             return 'No items in the cart.';
+//         }
+
+//         $html = '<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">';
+//         $html .= '<tr>
+//                     <th style="padding: 10px; border: 1px solid #ddd; background: #f8f8f8;">Product</th>
+//                     <th style="padding: 10px; border: 1px solid #ddd; background: #f8f8f8;">Quantity</th>
+//                     <th style="padding: 10px; border: 1px solid #ddd; background: #f8f8f8;">Price</th>
+//                 </tr>';
+
+//         foreach ($items as $item) {
+//             // Debug: Log individual item details
+//             $logger->info('Item Name: ' . $item->getName());
+//             $logger->info('Item Quantity: ' . $item->getQty());
+//             $logger->info('Item Price: ' . $item->getPrice());
+
+//             $html .= '<tr>';
+//             // Product Name column
+//             $html .= '<td style="padding: 10px; border: 1px solid #ddd;">' . $this->escapeHtml($item->getName()) . '</td>';
+
+//             // Quantity column
+//             $html .= '<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">' . (int)$item->getQty() . '</td>';
+
+//             // Price column
+//             $html .= '<td style="padding: 10px; border: 1px solid #ddd; text-align: right;">' 
+//                     . $quote->getStore()->formatPrice($item->getPrice()) . '</td>';
+
+//             $html .= '</tr>';
+//         }
+
+//         // Add total
+//         $html .= '<tr>
+//                     <td colspan="2" style="padding: 10px; border: 1px solid #ddd; text-align: right;"><strong>Total:</strong></td>
+//                     <td style="padding: 10px; border: 1px solid #ddd; text-align: right;"><strong>' 
+//                     . $quote->getStore()->formatPrice($quote->getGrandTotal()) . '</strong></td>
+//                 </tr>';
+
+//         $html .= '</table>';
+
+//         $logger->info('Cart items HTML generated successfully');
+
+//         return $html;
+//     } catch (\Exception $e) {
+//         $logger->error('Error generating cart items HTML: ' . $e->getMessage());
+//         $logger->error('Stack trace: ' . $e->getTraceAsString());
+//         return 'Unable to generate cart items list. Error: ' . $e->getMessage();
+//     }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//     protected function getCartItemsHtml($quote)
+// {
+//     $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+//     $logger = $objectManager->create(\Psr\Log\LoggerInterface::class);
+
+//     try {
+//         $html = '<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">';
+//         $html .= '<tr>
+//                     <th style="padding: 10px; border: 1px solid #ddd; background: #f8f8f8;">Image</th>
+//                     <th style="padding: 10px; border: 1px solid #ddd; background: #f8f8f8;">Product</th>
+//                     <th style="padding: 10px; border: 1px solid #ddd; background: #f8f8f8;">Quantity</th>
+//                     <th style="padding: 10px; border: 1px solid #ddd; background: #f8f8f8;">Price</th>
+//                 </tr>';
+
+//         $items = $quote->getAllVisibleItems();
+//         $logger->info('Number of cart items: ' . count($items));
+
+//         foreach ($items as $item) {
+//             // Get product
+//             $product = $item->getProduct();
+
+//             // Get product image
+//             $imageUrl = $this->getProductImageUrl($product);
+
+//             $html .= '<tr>';
+
+//             // Product Image column
+//             $html .= '<td style="padding: 10px; border: 1px solid #ddd; text-align: center; width: 100px;">';
+//             if ($imageUrl) {
+//                 $html .= '<img src="' . $imageUrl . '" alt="' . $this->escapeHtml($item->getName()) . '" style="max-width: 80px; max-height: 80px; object-fit: contain;"/>';
+//             } else {
+//                 $html .= 'No Image';
+//             }
+//             $html .= '</td>';
+
+//             // Product Name column
+//             $html .= '<td style="padding: 10px; border: 1px solid #ddd;">' . $this->escapeHtml($item->getName()) . '</td>';
+
+//             // Quantity column
+//             $html .= '<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">' . (int)$item->getQty() . '</td>';
+
+//             // Price column
+//             $html .= '<td style="padding: 10px; border: 1px solid #ddd; text-align: right;">' 
+//                     . $quote->getStore()->formatPrice($item->getPrice()) . '</td>';
+
+//             $html .= '</tr>';
+//         }
+
+//         // Add total
+//         $html .= '<tr>
+//                     <td colspan="3" style="padding: 10px; border: 1px solid #ddd; text-align: right;"><strong>Total:</strong></td>
+//                     <td style="padding: 10px; border: 1px solid #ddd; text-align: right;"><strong>' 
+//                     . $quote->getStore()->formatPrice($quote->getGrandTotal()) . '</strong></td>
+//                 </tr>';
+
+//         $html .= '</table>';
+
+//         $logger->info('Cart items HTML generated successfully');
+
+//         return $html;
+//     } catch (\Exception $e) {
+//         $logger->error('Error generating cart items HTML: ' . $e->getMessage());
+//         return 'Unable to generate cart items list.';
+//     }
+// }
+
+
+// protected function getProductImageUrl($product)
+// {
+//     try {
+//         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+//         $imageHelper = $objectManager->create(\Magento\Catalog\Helper\Image::class);
+        
+//         // Get the base image
+//         $imageUrl = $imageHelper
+//             ->init($product, 'product_page_image_medium')
+//             ->setImageFile($product->getImage())
+//             ->getUrl();
+
+//         return $imageUrl;
+//     } catch (\Exception $e) {
+//         // Log the error but return an empty string
+//         $logger = $objectManager->create(\Psr\Log\LoggerInterface::class);
+//         $logger->error('Error getting product image: ' . $e->getMessage());
+//         return '';
+//     }
+// }
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+<!--@subject Your Shopping Cart is Waiting @-->
+<!--@vars {
+"var customer_name":"Customer Name",
+"var cart_items":"Cart Items HTML"
+} @-->
+
+{{template config_path="design/email/header_template"}}
+
+<p>Hello {{var customer_name}},</p>
+
+<p>We noticed you have items in your shopping cart. Would you like to complete your purchase?</p>
+
+<p>Here's what's in your cart:</p>
+
+{{var cart_items|raw}}
+
+<p>Click <a href="{{store url='checkout/cart'}}">here</a> to return to your cart and complete your purchase.</p>
+
+{{template config_path="design/email/footer_template"}}
+
+
+
+
+<!--@subject Your Shopping Cart is Waiting @-->
+<!--@vars {
+"var customer_name":"Customer Name",
+"var cart_items":"Cart Items HTML"
+} @-->
+{{template config_path="design/email/header_template"}}
+<p>Hello {{var customer_name}},</p>
+<p>We noticed you have items in your shopping cart. Would you like to complete your purchase?</p>
+<p>Here's what's in your cart:</p>
+{{var cart_items}}
+<p>Click <a href="{{store url='checkout/cart'}}">here</a> to return to your cart and complete your purchase.</p>
+{{template config_path="design/email/footer_template"}}
+
+
+************************************************************************************************************************************************************
+// protected function getCartItemsHtml($quote)
+    // {
+    //     $html = '<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">';
+    //     $html .= '<tr>
+    //                 <th style="padding: 10px; border: 1px solid #ddd; background: #f8f8f8;">Product</th>
+    //                 <th style="padding: 10px; border: 1px solid #ddd; background: #f8f8f8;">Quantity</th>
+    //                 <th style="padding: 10px; border: 1px solid #ddd; background: #f8f8f8;">Price</th>
+    //               </tr>';
+        
+    //     foreach ($quote->getAllVisibleItems() as $item) {
+    //         $html .= '<tr>';
+    //         $html .= '<td style="padding: 10px; border: 1px solid #ddd;">' . $item->getName() . '</td>';
+    //         $html .= '<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">' . (int)$item->getQty() . '</td>';
+    //         $html .= '<td style="padding: 10px; border: 1px solid #ddd; text-align: right;">' 
+    //                 . $quote->getStore()->formatPrice($item->getPrice()) . '</td>';
+    //         $html .= '</tr>';
+    //     }
+        
+    //     // Add total
+    //     $html .= '<tr>
+    //                 <td colspan="2" style="padding: 10px; border: 1px solid #ddd; text-align: right;"><strong>Total:</strong></td>
+    //                 <td style="padding: 10px; border: 1px solid #ddd; text-align: right;"><strong>' 
+    //                 . $quote->getStore()->formatPrice($quote->getGrandTotal()) . '</strong></td>
+    //               </tr>';
+        
+    //     $html .= '</table>';
+    //     return $html;
+    // }
+
+
+
+    // protected function getCartItemsHtml($quote)
+    // {
+    //     $html = '<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">';
+    //     $html .= '<tr>
+    //                 <th style="padding: 10px; border: 1px solid #ddd; background: #f8f8f8;">Image</th>
+    //                 <th style="padding: 10px; border: 1px solid #ddd; background: #f8f8f8;">Product</th>
+    //                 <th style="padding: 10px; border: 1px solid #ddd; background: #f8f8f8;">Quantity</th>
+    //                 <th style="padding: 10px; border: 1px solid #ddd; background: #f8f8f8;">Price</th>
+    //             </tr>';
+        
+    //     foreach ($quote->getAllVisibleItems() as $item) {
+    //         // Get product
+    //         $product = $item->getProduct();
+            
+    //         // Get product image
+    //         try {
+    //             $imageUrl = $this->getProductImageUrl($product);
+    //         } catch (\Exception $e) {
+    //             $imageUrl = ''; // Fallback if image cannot be retrieved
+    //         }
+            
+    //         $html .= '<tr>';
+            
+    //         // Product Image column
+    //         $html .= '<td style="padding: 10px; border: 1px solid #ddd; text-align: center; width: 100px;">';
+    //         if ($imageUrl) {
+    //             $html .= '<img src="' . $imageUrl . '" alt="' . $item->getName() . '" style="max-width: 80px; max-height: 80px; object-fit: contain;"/>';
+    //         } else {
+    //             $html .= 'No Image';
+    //         }
+    //         $html .= '</td>';
+            
+    //         // Product Name column
+    //         $html .= '<td style="padding: 10px; border: 1px solid #ddd;">' . $item->getName() . '</td>';
+            
+    //         // Quantity column
+    //         $html .= '<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">' . (int)$item->getQty() . '</td>';
+            
+    //         // Price column
+    //         $html .= '<td style="padding: 10px; border: 1px solid #ddd; text-align: right;">' 
+    //                 . $quote->getStore()->formatPrice($item->getPrice()) . '</td>';
+            
+    //         $html .= '</tr>';
+    //     }
+        
+    //     // Add total
+    //     $html .= '<tr>
+    //                 <td colspan="3" style="padding: 10px; border: 1px solid #ddd; text-align: right;"><strong>Total:</strong></td>
+    //                 <td style="padding: 10px; border: 1px solid #ddd; text-align: right;"><strong>' 
+    //                 . $quote->getStore()->formatPrice($quote->getGrandTotal()) . '</strong></td>
+    //             </tr>';
+        
+    //     $html .= '</table>';
+
+    //     $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/cart_reminder.log');
+    //     $logger = new \Zend_Log();
+    //     $logger->addWriter($html);
+
+    //     return $html;
+    // }
+
+    // protected function getProductImageUrl($product)
+    // {
+    //     // Use Magento's image helper to get the product image
+    //     $imageHelper = \Magento\Framework\App\ObjectManager::getInstance()
+    //         ->get(\Magento\Catalog\Helper\Image::class);
+        
+    //     $imageUrl = $imageHelper
+    //         ->init($product, 'product_page_image_medium')
+    //         ->setImageFile($product->getImage())
+    //         ->getUrl();
+        
+    //     return $imageUrl;
+    // }
+
+
+
+
+
+************************************************** working code with send html ************************************************************************************************************************************************************************************************************************
+
+namespace Dolphin\CartReminder\Cron;
+
+use Magento\Framework\Stdlib\DateTime\DateTime;
+use Magento\Framework\Mail\Template\TransportBuilder;
+use Magento\Store\Model\StoreManagerInterface;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Quote\Model\ResourceModel\Quote\CollectionFactory;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+
+class SendReminders
+{
+    protected $quoteCollectionFactory;
+    protected $date;
+    protected $transportBuilder;
+    protected $storeManager;
+    protected $scopeConfig;
+
+    public function __construct(
+        CollectionFactory $quoteCollectionFactory,
+        DateTime $date,
+        TransportBuilder $transportBuilder,
+        StoreManagerInterface $storeManager,
+        ScopeConfigInterface $scopeConfig,
+    ) {
+        $this->quoteCollectionFactory = $quoteCollectionFactory;
+        $this->date = $date;
+        $this->scopeConfig = $scopeConfig;
+        $this->transportBuilder = $transportBuilder;
+        $this->storeManager = $storeManager;
+    }
+
+    public function execute()
+    {   
+        
+        $fiveMinutesAgo = $this->date->gmtDate('Y-m-d H:i:s', 
+            $this->date->gmtTimestamp() - (2 * 60)); 
+        
+
+        $collection = $this->quoteCollectionFactory->create()
+            ->addFieldToFilter('email_sent', 0) 
+            ->addFieldToFilter('updated_at', ['lteq' => $fiveMinutesAgo]);
+
+
+        foreach ($collection as $quote) {
+            
+            if ($quote->getCustomerEmail()) {
+                
+                $mail = $this->sendEmail($quote);
+                
+                if ($mail) {
+                    $quote->setEmailSent(1)->save();
+                }
+            }
+        }
+    }
+
+    protected function sendEmail($quote)
+    {
+        $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/testlog.log');
+        $logger = new \Zend_Log();
+        $logger->addWriter($writer);
+        
+        try {
+            $logger->info('Starting email send process');
+
+            $storeId = $quote->getStoreId();
+            $templateId = 'cart_reminder_email_template';
+
+            
+            $cartItemsHtml = $this->getCartItemsHtml($quote);
+
+            $templateVars = [
+                'customer_name' => $quote->getCustomerFirstname(),
+                'cart_items'    => $cartItemsHtml
+            ];
+
+            $senderEmail = $this->scopeConfig->getValue(
+                'smtp/configuration_option/username',
+                ScopeInterface::SCOPE_STORE
+            );
+
+            $transport = $this->transportBuilder
+                ->setTemplateIdentifier($templateId)
+                ->setTemplateOptions([
+                    'area'  => 'frontend',
+                    'store' => $storeId
+                ])
+                ->setTemplateVars($templateVars)
+                ->setFrom([
+                    'email' => $senderEmail,
+                    'name'  => 'Sales Department'
+                ])
+                ->addTo($quote->getCustomerEmail())
+                ->getTransport();
+            
+            $transport->sendMessage();
+            $logger->info('Email sent successfully');
+
+            return true;
+        } catch (\Exception $e) {
+            $logger->error('Failed to send email: ' . $e->getMessage());
+            $logger->error('Stack trace: ' . $e->getTraceAsString());
+            return false;
+        }
+    }
+
+    protected function getCartItemsHtml($quote)
+    {
+        $items = $quote->getAllVisibleItems(); 
+        if (!$items) {
+            return '<p>No items found in your cart.</p>';
+        }
+
+        $totalAmount = 0;
+        $html = '<table border="1" cellspacing="0" cellpadding="5" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th>SKU</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>';
+
+        foreach ($items as $item) {
+            $itemSubtotal = $item->getPrice() * $item->getQty();
+            $totalAmount += $itemSubtotal;
+
+            $html .= '<tr>
+                        <td>' . $item->getName() . '</td>
+                        <td>' . $item->getSku() . '</td>
+                        <td>$' . number_format($item->getPrice(), 2) . '</td>
+                        <td>' . (int)$item->getQty() . '</td>
+                        <td>$' . number_format($itemSubtotal, 2) . '</td>
+                    </tr>';
+        }
+
+        $html .= '<tr>
+                    <td colspan="4" align="right"><strong>Total:</strong></td>
+                    <td><strong>$' . number_format($totalAmount, 2) . '</strong></td>
+                </tr>';
+
+        $html .= '</tbody></table>';
+
+        return $html;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*********************************************************************************** working code with send email with send array ***************************************************************************************************************************************
+<?php
+
+namespace Dolphin\CartReminder\Cron;
+
+use Magento\Framework\Stdlib\DateTime\DateTime;
+use Magento\Framework\Mail\Template\TransportBuilder;
+use Magento\Store\Model\StoreManagerInterface;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Quote\Model\ResourceModel\Quote\CollectionFactory;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+
+class SendReminders
+{
+    protected $quoteCollectionFactory;
+    protected $date;
+    protected $transportBuilder;
+    protected $storeManager;
+    protected $scopeConfig;
+
+    public function __construct(
+        CollectionFactory $quoteCollectionFactory,
+        DateTime $date,
+        TransportBuilder $transportBuilder,
+        StoreManagerInterface $storeManager,
+        ScopeConfigInterface $scopeConfig,
+    ) {
+        $this->quoteCollectionFactory = $quoteCollectionFactory;
+        $this->date = $date;
+        $this->scopeConfig = $scopeConfig;
+        $this->transportBuilder = $transportBuilder;
+        $this->storeManager = $storeManager;
+    }
+
+    public function execute()
+    {   
+        $fiveMinutesAgo = $this->date->gmtDate('Y-m-d H:i:s', 
+            $this->date->gmtTimestamp() - (2 * 60)); 
+
+        $collection = $this->quoteCollectionFactory->create()
+            ->addFieldToFilter('email_sent', 0) 
+            ->addFieldToFilter('updated_at', ['lteq' => $fiveMinutesAgo]);
+
+        foreach ($collection as $quote) {
+            if ($quote->getCustomerEmail()) {
+                $mail = $this->sendEmail($quote);
+                
+                if ($mail) {
+                    $quote->setEmailSent(1)->save();
+                }
+            }
+        }
+    }
+
+    protected function sendEmail($quote)
+    {
+        $writer = new \Zend_Log_Writer_Stream(BP . '/var/log/testlog.log');
+        $logger = new \Zend_Log();
+        $logger->addWriter($writer);
+        
+        try {
+            $logger->info('Starting email send process');
+
+            $storeId = $quote->getStoreId();
+            $templateId = 'cart_reminder_email_template';
+
+            $cartItems = $this->getCartItems($quote);
+
+            $templateVars = [
+                'customer_name' => $quote->getCustomerFirstname(),
+                'cart_items' => $cartItems,
+                'store_url' => $this->storeManager->getStore()->getBaseUrl(),
+                'total_amount' => $cartItems['total']
+            ];
+
+            $senderEmail = $this->scopeConfig->getValue(
+                'smtp/configuration_option/username',
+                ScopeInterface::SCOPE_STORE
+            );
+
+            $transport = $this->transportBuilder
+                ->setTemplateIdentifier($templateId)
+                ->setTemplateOptions([
+                    'area'  => 'frontend',
+                    'store' => $storeId
+                ])
+                ->setTemplateVars($templateVars)
+                ->setFrom([
+                    'email' => $senderEmail,
+                    'name'  => 'Sales Department'
+                ])
+                ->addTo($quote->getCustomerEmail())
+                ->getTransport();
+            
+            $transport->sendMessage();
+            $logger->info('Email sent successfully');
+
+            return true;
+        } catch (\Exception $e) {
+            $logger->error('Failed to send email: ' . $e->getMessage());
+            $logger->error('Stack trace: ' . $e->getTraceAsString());
+            return false;
+        }
+    }
+
+    protected function getCartItems($quote)
+    {
+        $items = $quote->getAllVisibleItems();
+        $cartItems = [
+            'items' => [],
+            'total' => 0
+        ];
+
+        if (!$items) {
+            return $cartItems;
+        }
+
+        foreach ($items as $item) {
+            $itemSubtotal = $item->getPrice() * $item->getQty();
+            $cartItems['total'] += $itemSubtotal;
+
+            $cartItems['items'][] = [
+                'name' => $item->getName(),
+                'sku' => $item->getSku(),
+                'price' => $item->getPrice(),
+                'quantity' => (int)$item->getQty(),
+                'subtotal' => $itemSubtotal
+            ];
+        }
+
+        return $cartItems;
+    }
+}
+
+
+
+
+<!--@subject Your Shopping Cart is Waiting @-->
+<!--@vars {
+"var customer_name":"Customer Name",
+"var cart_items.items":"Array of Cart Items",
+"var cart_items.total":"Cart Total Amount",
+"var store_url":"Store URL"
+} @-->
+
+{{template config_path="design/email/header_template"}}
+
+<p>Hello {{var customer_name}},</p>
+<p>We noticed you have items in your shopping cart. Would you like to complete your purchase?</p>
+<p>Here's what's in your cart:</p>
+
+<table border="1" cellspacing="0" cellpadding="5" width="100%">
+    <thead>
+        <tr>
+            <th>Product Name</th>
+            <th>SKU</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{for item in cart_items.items}}
+        <tr>
+            <td>{{var item.name}}</td>
+            <td>{{var item.sku}}</td>
+            <td>${{var item.price}}</td>
+            <td>{{var item.quantity}}</td>
+            <td>${{var item.subtotal}}</td>
+        </tr>
+        {{/for}}
+        <tr>
+            <td colspan="4" align="right"><strong>Total:</strong></td>
+            <td><strong>${{var cart_items.total}}</strong></td>
+        </tr>
+    </tbody>
+</table>
+
+<p>Click <a href="{{var store_url}}checkout/cart">here</a> to return to your cart and complete your purchase.</p>
+
+{{template config_path="design/email/footer_template"}}
+
+
+
+
+
+
+
+

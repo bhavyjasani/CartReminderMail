@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="checkout_cart_save_after">
+        <observer name="custom_cart_reminder_observer" 
+                  instance="Dolphin\CartReminder\Observer\CartUpdateObserver"/>
+    </event>
+</config>

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd">
+    <template id="cart_reminder_email_template"
+              label="Cart Reminder Email"
+              file="cart_reminder.html"
+              type="html"
+              module="Dolphin_CartReminder"
+              area="frontend"/>
+</config>

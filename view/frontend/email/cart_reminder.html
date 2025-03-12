@@ -1,0 +1,44 @@
+<!--@subject Your Shopping Cart is Waiting @-->
+<!--@vars {
+"var customer_name":"Customer Name",
+"var cart_items.items":"Array of Cart Items",
+"var cart_items.total":"Cart Total Amount",
+"var store_url":"Store URL"
+} @-->
+
+{{template config_path="design/email/header_template"}}
+
+<p>Hello {{var customer_name}},</p>
+<p>We noticed you have items in your shopping cart. Would you like to complete your purchase?</p>
+<p>Here's what's in your cart:</p>
+
+<table border="1" cellspacing="0" cellpadding="5" width="100%">
+    <thead>
+        <tr>
+            <th>Product Name</th>
+            <th>SKU</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{for item in cart_items.items}}
+        <tr>
+            <td>{{var item.name}}</td>
+            <td>{{var item.sku}}</td>
+            <td>${{var item.price}}</td>
+            <td>{{var item.quantity}}</td>
+            <td>${{var item.subtotal}}</td>
+        </tr>
+        {{/for}}
+        <tr>
+            <td colspan="4" align="right"><strong>Total:</strong></td>
+            <td><strong>${{var cart_items.total}}</strong></td>
+        </tr>
+    </tbody>
+</table>
+
+<p>Click <a href="{{var store_url}}checkout/cart">here</a> to return to your cart and complete your purchase.</p>
+
+{{template config_path="design/email/footer_template"}}
